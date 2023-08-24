@@ -22,9 +22,13 @@ def setup_db():
         ''')
 
 def get_active_window_title():
-    window_id = subprocess.check_output(['xdotool', 'getactivewindow']).decode().strip()
-    window_name = subprocess.check_output(['xdotool', 'getwindowname', window_id]).decode().strip()
-    return window_name
+    try:
+        window_id = subprocess.check_output(['xdotool', 'getactivewindow']).decode().strip()
+        window_name = subprocess.check_output(['xdotool', 'getwindowname', window_id]).decode().strip()
+        return window_name
+    except subprocess.CalledProcessError:
+        return "Unknown Window"
+
 def track_activity(interval):
     with open(PID_FILE, 'w') as f:
         f.write(str(os.getpid()))
@@ -41,6 +45,7 @@ def track_activity(interval):
         if os.path.exists(PID_FILE):
             os.remove(PID_FILE)
         print("\nTracking stopped.")
+
 
 def stop_tracking():
     if os.path.exists(PID_FILE):
